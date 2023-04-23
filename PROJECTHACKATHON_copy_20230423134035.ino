@@ -16,7 +16,7 @@ int sensor_one = A1;
 int sensor_two = A0;
 int sensor_three = A2;
 int led = 4;
-float threshold = 130; 
+float threshold = 60; 
 int counter = 0;
 volatile int alert_times = 0;
 float ambient_cal1 = 0;
@@ -126,6 +126,7 @@ float CalculateAmbience() {
   Serial.println(ambience);
 
   idle(ambience);
+  return;
 }
 
 
@@ -168,7 +169,7 @@ int idle(float value) {
 
 
     counter += 1;
-    if (counter == 100) { 
+    if (counter == 50) { 
       CalculateAmbience();
     }
 
@@ -180,7 +181,6 @@ float alert_noise(float one, float two, float three) {
   Serial.println("Noise Detected");
 
   LEDRED();
-  Servo();
   alert_times += 1;
 
   lcd.setCursor(0,0);
@@ -195,11 +195,11 @@ float alert_noise(float one, float two, float three) {
   // if ((two > one) & (two > three))
   // if ((three > one) & (three > two))
 
-  if (one > (((two + three)/2))+(threshold/3)) {
+  if (one > (((two + three)/2))+(threshold/4)) {
     myServo.write(servoMax);
-  }  if (two > (((one + three)/2)+(threshold/3))) {
+  }  if (two > (((one + three)/2)+(threshold/4))) {
     myServo.write(servoPos);
-  }  if (three > (((two + one)/2)+(threshold/3))) {
+  }  if (three > (((two + one)/2)+(threshold/4))) {
     myServo.write(servoMin);
   } if (three == two) {
     myServo.write(40);
@@ -216,7 +216,12 @@ float alert_noise(float one, float two, float three) {
   myServo.write(90);
 
   CalculateAmbience();
+  return;
 }
+
+
+
+
 
 int endAlert(){
   lcd.setCursor(0,0);
